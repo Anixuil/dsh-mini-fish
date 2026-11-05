@@ -1,0 +1,56 @@
+{
+  "name": "@local/dsh-pet",
+  "version": "1.0.0",
+  "description": "Desktop pet for DeepSeek Harness: a framerate-locked, transparent, always-on-top companion process that reacts to agent activity and outlives the main window.",
+  "license": "MIT",
+  "author": "Anixuil",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Anixuil/dsh-mini-fish.git"
+  },
+  "homepage": "https://github.com/Anixuil/dsh-mini-fish#readme",
+  "bugs": {
+    "url": "https://github.com/Anixuil/dsh-mini-fish/issues"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "node dev/smoke.mjs",
+    "smoke": "node dev/smoke.mjs"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./package.json": "./package.json",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "icon": "./icon.svg",
+  "files": [
+    "index.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "companion/src",
+    "pets",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "desktop-pet",
+    "companion",
+    "wpf",
+    "transparent-window",
+    "pet-pack"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

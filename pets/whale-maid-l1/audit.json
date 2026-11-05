@@ -1,0 +1,428 @@
+{
+  "expected_count": 24,
+  "layers": [
+    {
+      "name": "ahoge",
+      "size": [
+        1024,
+        1328
+      ],
+      "mode": "RGBA",
+      "bbox": [
+        312,
+        31,
+        527,
+        150
+      ],
+      "nonzero_alpha": 7343,
+      "transparent_pixels": 1352529,
+      "sha256": "b68996ae53ba6bd7a11416cb20661e94374997b95bcfac6144cecca00546c3cd"
+    },
+    {
+      "name": "apron",
+      "size": [
+        1024,
+        1328
+      ],
+      "mode": "RGBA",
+      "bbox": [
+        353,
+        781,
+        631,
+        985
+      ],
+      "nonzero_alpha": 47835,
+      "transparent_pixels": 1312037,
+      "sha256": "48092b57705f8452758c996f5e8a800784481a9a4bf789915f43ed1a682ee8a4"
+    },
+    {
+      "name": "arm_l",
+      "size": [
+        1024,
+        1328
+      ],
+      "mode": "RGBA",
+      "bbox": [
+        182,
+        619,
+        436,
+        894
+      ],
+      "nonzero_alpha": 23432,
+      "transparent_pixels": 1336440,
+      "sha256": "a124f128d55affb3b9f2fc4a5c65182665ad4f7185e539fc69ad54b8c7e05cdd"
+    },
+    {
+      "name": "arm_r",
+      "size": [
+        1024,
+        1328
+      ],
+      "mode": "RGBA",
+      "bbox": [
+        569,
+        633,
+        798,
+        890
+      ],
+      "nonzero_alpha": 20825,
+      "transparent_pixels": 1339047,
+      "sha256": "c380b7a61d12f92e99a276face8791d4af425173ec544b6ee27a7ef1eb2572f2"
+    },
+    {
+      "name": "blush",
+      "size": [
+        1024,
+        1328
+      ],
+      "mode": "RGBA",
+      "bbox": [
+        346,
+        526,
+        643,
+        577
+      ],
+      "nonzero_alpha": 4577,
+      "transparent_pixels": 1355295,
+      "sha256": "225c27a5a1dce9b05de69535b2e01fe578d25f8cddb77e8b97723b83d8f2818c"
+    },
+    {
+      "name": "body",
+      "size": [
+        1024,
+        1328
+      ],
+      "mode": "RGBA",
+      "bbox": [
+        350,
+        583,
+        646,
+        1219
+      ],
+      "nonzero_alpha": 130613,
+      "transparent_pixels": 1229259,
+      "sha256": "8732917926bfb9a0fd515a26543566ef763eae7c6c014ea02508ecc57556a438"
+    },
+    {
+      "name": "bow_r",
+      "size": [
+        1024,
+        1328
+      ],
+      "mode": "RGBA",
+      "bbox": [
+        719,
+        333,
+        820,
+        416
+      ],
+      "nonzero_alpha": 5956,
+      "transparent_pixels": 1353916,
+      "sha256": "6b1aa91aaad5cc178df7b4831ae9a3e3e7a0c874d6dcf49d940047d304648c10"
+    },
+    {
+      "name": "brow",
+      "size": [
+        1024,
+        1328
+      ],
+      "mode": "RGBA",
+      "bbox": [
+        382,
+        423,
+        597,
+        437
+      ],
+      "nonzero_alpha": 499,
+      "transparent_pixels": 1359373,
+      "sha256": "dbdd29a50c9abb818a73eaeb514116d6c0b8c60aaa04f7d4b96befead0a63c00"
+    },
+    {
+      "name": "ear_l",
+      "size": [
+        1024,
+        1328
+      ],
+      "mode": "RGBA",
+      "bbox": [
+        132,
+        389,
+        281,
+        533
+      ],
+      "nonzero_alpha": 11826,
+      "transparent_pixels": 1348046,
+      "sha256": "abe94a8b49b42a49a238fb029bdceaa54215846950a1ff31fea6da3c4aaf90e5"
+    },
+    {
+      "name": "ear_r",
+      "size": [
+        1024,
+        1328
+      ],
+      "mode": "RGBA",
+      "bbox": [
+        701,
+        389,
+        891,
+        532
+      ],
+      "nonzero_alpha": 16704,
+      "transparent_pixels": 1343168,
+      "sha256": "2ed489c1c3fe85dfa603862a7f3e46b591efd4f8b4228ef3b9321ba5a217af38"
+    },
+    {
+      "name": "eyes_closed",
+      "size": [
+        1024,
+        1328
+      ],
+      "mode": "RGBA",
+      "bbox": [
+        337,
+        500,
+        653,
+        521
+      ],
+      "nonzero_alpha": 1829,
+      "transparent_pixels": 1358043,
+      "sha256": "6242c63cb94613dc42d13420174d8ed9023dc5cd9039503d928d992fe3dfd48d"
+    },
+    {
+      "name": "eyes_half",
+      "size": [
+        1024,
+        1328
+      ],
+      "mode": "RGBA",
+      "bbox": [
+        330,
+        478,
+        660,
+        532
+      ],
+      "nonzero_alpha": 9746,
+      "transparent_pixels": 1350126,
+      "sha256": "4ecb958a0d50ae07621e62ead8945f72728de98279f94cd989fb25c1d2680a3f"
+    },
+    {
+      "name": "eyes_open",
+      "size": [
+        1024,
+        1328
+      ],
+      "mode": "RGBA",
+      "bbox": [
+        332,
+        427,
+        658,
+        538
+      ],
+      "nonzero_alpha": 19532,
+      "transparent_pixels": 1340340,
+      "sha256": "7243f20a7b051752988d92ebf8ee13b9948d56243daf97fcc3cfdbeff7fb43d7"
+    },
+    {
+      "name": "hair_back",
+      "size": [
+        1024,
+        1328
+      ],
+      "mode": "RGBA",
+      "bbox": [
+        96,
+        163,
+        889,
+        964
+      ],
+      "nonzero_alpha": 419246,
+      "transparent_pixels": 940626,
+      "sha256": "efbcfa9d7fe3e64879552f5f636ecb58035a5da6e5a059903688bbbc023430cc"
+    },
+    {
+      "name": "hair_front",
+      "size": [
+        1024,
+        1328
+      ],
+      "mode": "RGBA",
+      "bbox": [
+        220,
+        164,
+        762,
+        568
+      ],
+      "nonzero_alpha": 134979,
+      "transparent_pixels": 1224893,
+      "sha256": "43df166d2a491639ac2b27f4030f1990ac498dcddeab256b67db0164b8824162"
+    },
+    {
+      "name": "hair_side_l",
+      "size": [
+        1024,
+        1328
+      ],
+      "mode": "RGBA",
+      "bbox": [
+        264,
+        487,
+        366,
+        709
+      ],
+      "nonzero_alpha": 10237,
+      "transparent_pixels": 1349635,
+      "sha256": "f7ffe35425c202d3f3c5ab3691f8991bb57b147dd49902dfafef55e2cf71b0e5"
+    },
+    {
+      "name": "hair_side_r",
+      "size": [
+        1024,
+        1328
+      ],
+      "mode": "RGBA",
+      "bbox": [
+        617,
+        441,
+        734,
+        711
+      ],
+      "nonzero_alpha": 9933,
+      "transparent_pixels": 1349939,
+      "sha256": "4adeb67b425ebdd95b720bd0f93881dcc73efdf3f6ec357f1fd17d13f3e1c14e"
+    },
+    {
+      "name": "head",
+      "size": [
+        1024,
+        1328
+      ],
+      "mode": "RGBA",
+      "bbox": [
+        311,
+        238,
+        706,
+        612
+      ],
+      "nonzero_alpha": 117857,
+      "transparent_pixels": 1242015,
+      "sha256": "a62dcf00d3550c31dc1e623d8a2a7c14485f79bc80aba75bc2623793b15d2090"
+    },
+    {
+      "name": "headdress",
+      "size": [
+        1024,
+        1328
+      ],
+      "mode": "RGBA",
+      "bbox": [
+        221,
+        103,
+        793,
+        401
+      ],
+      "nonzero_alpha": 44343,
+      "transparent_pixels": 1315529,
+      "sha256": "171cf99a665e3a7ed26191e8ab228b18111b35061c3f7b878af6c4708ce2160c"
+    },
+    {
+      "name": "mouth_open",
+      "size": [
+        1024,
+        1328
+      ],
+      "mode": "RGBA",
+      "bbox": [
+        464,
+        538,
+        522,
+        586
+      ],
+      "nonzero_alpha": 2766,
+      "transparent_pixels": 1357106,
+      "sha256": "94ca97a03ceaa0df64a15cabdf3e0016e2ef0f0402f86be36354370ba92a17cf"
+    },
+    {
+      "name": "mouth_smile",
+      "size": [
+        1024,
+        1328
+      ],
+      "mode": "RGBA",
+      "bbox": [
+        462,
+        538,
+        525,
+        588
+      ],
+      "nonzero_alpha": 3136,
+      "transparent_pixels": 1356736,
+      "sha256": "bc0cee5411e513b87781a8cb265696b622385df9b39114b10c99c4d905c50d52"
+    },
+    {
+      "name": "mouth_surprised",
+      "size": [
+        1024,
+        1328
+      ],
+      "mode": "RGBA",
+      "bbox": [
+        478,
+        542,
+        508,
+        582
+      ],
+      "nonzero_alpha": 1200,
+      "transparent_pixels": 1358672,
+      "sha256": "9817a827265843f7fb6e14e73575df1c7c574d486ce94a4114c4fedfaac25371"
+    },
+    {
+      "name": "skirt",
+      "size": [
+        1024,
+        1328
+      ],
+      "mode": "RGBA",
+      "bbox": [
+        200,
+        766,
+        762,
+        1072
+      ],
+      "nonzero_alpha": 121651,
+      "transparent_pixels": 1238221,
+      "sha256": "27aab976f657e5735f146c7f39b73a08289e4b544ced928910c7cc70c70f2f35"
+    },
+    {
+      "name": "tail",
+      "size": [
+        1024,
+        1328
+      ],
+      "mode": "RGBA",
+      "bbox": [
+        567,
+        725,
+        972,
+        1057
+      ],
+      "nonzero_alpha": 57924,
+      "transparent_pixels": 1301948,
+      "sha256": "eb2d6340a37f042a805645e558504e9679242a9d79e49ed8fbddf49932beb6b7"
+    }
+  ],
+  "errors": [],
+  "native_comparison": {
+    "full_mean_absolute_error": 1.246853625439257,
+    "face_mean_absolute_error": 0.0010915750915750915,
+    "face_pixels_over_3": 3,
+    "face_max_channel_delta": 5
+  },
+  "motion_review": {
+    "angles_degrees": [
+      -2,
+      0,
+      2
+    ],
+    "type": "offline sprite transform render, not runtime rig validation"
+  }
+}

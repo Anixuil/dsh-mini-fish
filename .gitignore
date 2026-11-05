@@ -1,0 +1,40 @@
+# 运行产物：宿主由插件首次启动时自动用系统 csc 编译
+companion/bin/
+*.exe
+*.pdb
+*.obj
+
+# QA 工具与文档图：源文件在仓库里，编译/生成产物不入库
+tools/*.exe
+tools/tmp-*/
+tools/__pycache__/
+pets/*/_preview-composite.png
+*.tgz
+
+# 本地会话/开发数据
+.tmp-session/
+.workbuddy/
+node_modules/
+
+# 素材源文件（母版分层、三视图、母版 zip）体积太大，不入库；仓库只带成品宠物包
+art-source/
+assets/
+
+# 仓库只保留 README / docs 引用到的那几张截图
+docs/images/*
+!docs/images/gaze-idle-return.png
+!docs/images/pack-preview.png
+!docs/images/phase2-poses.png
+!docs/images/phase3-poses.png
+!docs/images/phase4-corner-rest.png
+!docs/images/phase4-drag-out.png
+!docs/images/phase4-perch-sit.png
+
+# 编辑器 / 系统
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/
+__pycache__/
+*.pyc

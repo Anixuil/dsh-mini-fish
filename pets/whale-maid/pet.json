@@ -1,0 +1,14 @@
+{
+  "spec": "dsh-pet/1",
+  "id": "whale-maid",
+  "name": { "zh": "蓝鲸女仆·小蓝", "en": "Lapis the Whale Maid" },
+  "version": "0.1.0",
+  "author": "dsh-mini-fish",
+  "license": "CC-BY-NC-4.0",
+  "conformance": "L0",
+  "canvas": { "width": 343, "height": 444, "anchor": [0.5, 1.0], "baseScale": 0.72 },
+  "layers": [
+    { "id": "body", "image": "parts/body.png", "z": 0, "pivot": [0.5, 1.0] }
+  ],
+  "idle": { "breath": 0.012, "sway": 0.9, "bob": 2.6, "speed": 1.0 }
+}

@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "Desktop Pet",
+    "description": "A high-framerate, draggable companion that reacts to DSH agent activity. It stays after the main window closes and exits with the app."
+  }
+}
+

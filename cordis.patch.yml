@@ -1,0 +1,14 @@
+# DSH bundle patch：把桌宠插件插进 profile。
+# 包名必须和 package.json 的 name 一致，否则行无法解析。
+# config 的默认值见 README「配置」一节；profile 里同 id 的 override 会整体替换这份 config。
+- insert:
+    - id: dsh-pet
+      name: '@local/dsh-pet'
+      config:
+        enabled: true
+        petId: whale-maid-l1
+        reactToAgent: true
+        showBalance: true
+        sleep: false
+        windowAware: true
+        walkIdleSeconds: 60
