@@ -1,11 +1,13 @@
 # 行为素材补齐清单（M3 当前实现对照）
 
-> **v2 返工记录（2026-11-05）**：用户明确以已确认母版为唯一外观基准。新版表情锁定原头发/脸轮廓/服装，结构改为原像素拆分；动作中必需的新绘区域单独说明。见 [v2 说明](../pets/whale-maid-l1/art-source/behavior-supplement-v2/final/README.md) 和 [母版对照图](../pets/whale-maid-l1/art-source/behavior-supplement-v2/final/previews/master-vs-expressions.png)。v2 为返工交付，未记录用户外观通过或运行时验收；v1 的未通过结论继续保留。
+> 本文是素材制作阶段的内部工作记录：引用的 `art-source/`、`assets/` 源文件（母版分层、补充包 ZIP、三视图）体积太大，**不在本仓库内**，因此相关条目只保留文字引用。
+
+> **v2 返工记录（2026-11-05）**：用户明确以已确认母版为唯一外观基准。新版表情锁定原头发/脸轮廓/服装，结构改为原像素拆分；动作中必需的新绘区域单独说明。见 v2 说明 和 母版对照图。v2 为返工交付，未记录用户外观通过或运行时验收；v1 的未通过结论继续保留。
 
 更新时间：2026-11-05
 规范基准：`docs/dsh-pet-feasibility.md`（DPF v1）· 画布 1024×1328 · 全画布透明 PNG · 交付 PSD
 
-> **2026-11-05 返工状态：v1 未通过外观一致性验收。** 用户指出补充包与已确认母版相差明显，包括刘海、脸型、服装及尾巴的变化。此前“素材完成/通过”的判断撤回，v1 不可作为母版一致的正式接入依据。[v1 制作说明](../pets/whale-maid-l1/art-source/behavior-supplement-v1/final/README.md) 与 [v1 ZIP](../pets/whale-maid-l1/art-source/behavior-supplement-v1/whale-maid-behavior-supplement-v1.zip) 仅保留作历史记录，详见 [未通过说明](../pets/whale-maid-l1/art-source/behavior-supplement-v1/REJECTED.md)。现以用户明确选定的 [face-remake-v1/master.png](../pets/whale-maid-l1/art-source/face-remake-v1/master.png) 为唯一外观基准制作 v2，保留母版可见像素，只改动作所需区域。下文仍作为待完成需求清单；返工产物及运行时接入须分别说明，不能以文件数量代替外观验收。
+> **2026-11-05 返工状态：v1 未通过外观一致性验收。** 用户指出补充包与已确认母版相差明显，包括刘海、脸型、服装及尾巴的变化。此前“素材完成/通过”的判断撤回，v1 不可作为母版一致的正式接入依据。v1 制作说明 与 v1 ZIP 仅保留作历史记录，详见 未通过说明。现以用户明确选定的 `face-remake-v1/master.png` 为唯一外观基准制作 v2，保留母版可见像素，只改动作所需区域。下文仍作为待完成需求清单；返工产物及运行时接入须分别说明，不能以文件数量代替外观验收。
 
 > 说明：当前运行时已经能跑「呼吸/眨眼/眼嘴切换/弹簧/拖拽/散步/窗口趴台/任务联动/余额」，
 > 但其中不少动作是**用现有素材+程序化变形硬撑**的。下面按行为列出缺口，交付后我接进运行时。
