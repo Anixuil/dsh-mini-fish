@@ -12,11 +12,29 @@ const SRC = join(HERE, 'companion', 'src', 'PetHost.cs')
 const DEFAULT_PET = 'whale-maid-l1'
 const FX = 'C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319'
 
-/** Build the companion with the in-box .NET Framework compiler when it is missing. */
+/** Build the companion with the in-box .NET Framework compiler when it is missing or stale. */
 function ensureCompanion() {
-  if (existsSync(EXE)) return true
   const csc = join(FX, 'csc.exe')
+  const built = existsSync(EXE)
+
+  // Rebuild when the source is newer than the binary. Without this an existing install
+  // would keep running the old host forever: the exe is only built on first launch, so a
+  // fixed PetHost.cs would never reach anyone who already has one.
+  let stale = false
+  if (built) {
+    try {
+      stale = statSync(SRC).mtimeMs > statSync(EXE).mtimeMs
+    } catch {
+      stale = false
+    }
+  }
+  if (built && !stale) return true
+
   if (!existsSync(csc)) {
+    if (built) {
+      log('PetHost.exe is older than PetHost.cs but csc.exe was not found; keeping the existing build')
+      return true
+    }
     log('PetHost.exe missing and csc.exe not found; cannot build the companion')
     return false
   }
@@ -32,8 +50,15 @@ function ensureCompanion() {
   ]
   const result = spawnSync(csc, args, { windowsHide: true, encoding: 'utf8' })
   if (result.status !== 0) {
-    log('companion build failed:', (result.stderr || result.stdout || '').trim())
-    return false
+    const detail = (result.stderr || result.stdout || '').trim()
+    // A running host locks its own exe. That is not a fatal error: the current process
+    // keeps working and the next launch compiles the new source.
+    if (/CS0016|cannot be opened|being used by another process/i.test(detail)) {
+      log('companion rebuild skipped (PetHost.exe is in use); it will be rebuilt on the next launch')
+      return built
+    }
+    log('companion build failed:', detail)
+    return built && !stale
   }
   log('companion built:', EXE)
   return true

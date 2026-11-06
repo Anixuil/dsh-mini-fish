@@ -23,6 +23,7 @@
 | 能力 | 结论 | 证据 |
 |---|---|---|
 | 透明、无边框、置顶窗口 | ✅ WPF `AllowsTransparency + Topmost` 显示在其他应用（企业微信/IDE/DSH）之上 | 截图 |
+| 置顶的持续性 | ⚠️→✅ `WS_EX_TOPMOST` 会被外部 `HWND_NOTOPMOST`／shell 过渡挤掉，WPF 不会自动补 | 2026-11-06 加 `WM_WINDOWPOSCHANGING` 否决 + 帧循环 z 序兜底，见 `behavior-supplement-v2-review.md` |
 | 关窗后桌宠仍在 | ✅ 桌面端「关闭窗口」= **隐藏到托盘**（进程继续运行），桌宠进程与窗口解耦 | 主进程源码 `window.hide()`、「Running tasks will continue… reopen from the system tray」 |
 | 逐像素点击穿透 | ✅ 透明像素 `WM_NCHITTEST → HTTRANSPARENT`，宠物身体 `HTCLIENT` | 命中测试：`(2590,1300)→-1`、`(2827,1450)→1` |
 | 逐帧高帧率 | ✅ `CompositionTarget.Rendering`（跟随显示器 vsync），仅更新矩阵变换，开销极低 | 运行观察 |
@@ -314,7 +315,7 @@ python tools/fix-face-split.py          # 修母版拆层残留：头发层里�
 | 表情预设 | v2 母版锁定素材：眼 6 态 / 眉 5 态 / 口型 8 态 / 腮红 3 态 + head_brow_ready；运行时按状态映射 neutral/happy/sad/angry/shy/celebrate/focused/sleepy/alert，互斥切换；眨眼结束恢复当前眼态；不用眉毛时 brow 层隐藏 |
 | PNG 粒子 | parts/fx_*.png（128px）替换文字符号，爱心/星星/zzz 按需加载，缺失时回退文字 |
 
-| 感知前台窗口 | 每 200ms 调 GetForegroundWindow，用 DwmGetWindowAttribute(DWMWA_EXTENDED_FRAME_BOUNDS) 取真实可见边界，排除自身/桌面/最小化/被 cloaked 的窗口；窗口（hwnd + 边界 + 全屏标记）**必须连续 5 秒不变**才成为趴台目标，被拖动/缩放/来回切换的窗口不追；成为目标后她把宠物移动到该窗口右上角窗台（脚踩上沿、面向窗口中心，位置限制在工作区内），窗口移动/缩放时先起身等它停稳再跟。右键「查看前台窗口」显示标题与尺寸，「跟随前台窗口」开关持久化。只读几何与标题，不读窗口内容；**全屏窗口（覆盖整个显示器，含 F11/游戏/视频）和最大化窗口都不当作趴台目标**，改为去右下角趴着。|验证：`pet.walk` 信号后 1.6s 窗口 x 位移 80px；`pet.drag` 抓拍显示倾斜+臂摆；光标移到宠物左/右两侧，瞳孔与头部跟随；`task.start/done` 显示「包在我身上…大概！」与「搞定！7 步 · 83 秒」。新增 `pet.walk / pet.drag / pet.twirl / pet.poke / pet.sleep` 测试信号。
+| 感知前台窗口 | 每 200ms 调 GetForegroundWindow，用 DwmGetWindowAttribute(DWMWA_EXTENDED_FRAME_BOUNDS) 取真实可见边界，排除自身/桌面/最小化/被 cloaked 的窗口；窗口（hwnd + 边界 + 全屏标记）**必须连续 5 秒不变**才成为趴台目标，被拖动/缩放/来回切换的窗口不追；成为目标后她把宠物移动到该窗口上沿窗台（脚踩上沿、面向窗口中心，位置限制在工作区内；横向座位按窗口宽度自适应，够宽就贴右侧并让开标题栏按钮、太窄改坐左上角，见 `behavior-supplement-v2-review.md`），窗口移动/缩放时先起身等它停稳再跟。右键「查看前台窗口」显示标题与尺寸，「跟随前台窗口」开关持久化。只读几何与标题，不读窗口内容；**全屏窗口（覆盖整个显示器，含 F11/游戏/视频）和最大化窗口都不当作趴台目标**，改为去右下角趴着。|验证：`pet.walk` 信号后 1.6s 窗口 x 位移 80px；`pet.drag` 抓拍显示倾斜+臂摆；光标移到宠物左/右两侧，瞳孔与头部跟随；`task.start/done` 显示「包在我身上…大概！」与「搞定！7 步 · 83 秒」。新增 `pet.walk / pet.drag / pet.twirl / pet.poke / pet.sleep` 测试信号。
 
 ---
 

@@ -996,6 +996,16 @@ namespace DshPetHost
 
         [DllImport("user32.dll")] static extern IntPtr GetForegroundWindow();
         [DllImport("user32.dll")] static extern bool GetWindowRect(IntPtr hWnd, out RECT rect);
+        // z-order inspection: IsWindowVisible + GetWindow(GW_HWNDPREV) let us prove whether
+        // any visible window really covers her, instead of trusting the WS_EX_TOPMOST bit
+        [DllImport("user32.dll")] static extern IntPtr GetWindow(IntPtr hWnd, uint cmd);
+        [DllImport("user32.dll")] static extern bool SetWindowPos(IntPtr hWnd, IntPtr insertAfter, int x, int y, int cx, int cy, uint flags);
+        const uint GW_HWNDPREV = 3;
+        static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
+        // NOSIZE | NOMOVE keep her exactly where she is; NOACTIVATE keeps the pet from
+        // stealing focus when we re-assert the z-order.
+        const uint SWP_NOSIZE = 0x0001, SWP_NOMOVE = 0x0002, SWP_NOACTIVATE = 0x0010;
+        const uint SWP_REASSERT = SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE;
         [DllImport("user32.dll")] static extern bool IsIconic(IntPtr hWnd);
         [DllImport("user32.dll")] static extern bool IsZoomed(IntPtr hWnd);
         [DllImport("user32.dll")] static extern bool IsWindowVisible(IntPtr hWnd);
@@ -1103,6 +1113,13 @@ namespace DshPetHost
         double _cornerSettle;
         bool _qaPinForeground;
         double _lastQaTrace = -100;
+        // Topmost watchdog. A window can silently fall out of the topmost band without
+        // WS_EX_TOPMOST changing: another app calling SetWindowPos(HWND_NOTOPMOST), a
+        // shell / DWM transition, or a third-party window manager reshuffling the band.
+        // Once that happens WPF never re-asserts Topmost on its own, so she stays behind
+        // ordinary windows until the user restarts the host. We poll the real z-order and
+        // put her back on top.
+        double _lastZOrderCheck = -100;
         // Where the user dropped her by hand / what the foreground looked like back then
         double _dragReleasedAt = -1000;
         IntPtr _dragFgHwnd;
@@ -1351,6 +1368,14 @@ namespace DshPetHost
             {
                 _lastWindowPoll = _t;
                 PollForegroundWindow();
+            }
+            // Cheap, throttled self-heal: something may have knocked her out of the
+            // topmost band (see EnsureTopmost). 2 Hz is fast enough to look instant and
+            // cheap enough to leave in the 60 fps loop.
+            if (_t - _lastZOrderCheck > 0.5)
+            {
+                _lastZOrderCheck = _t;
+                EnsureTopmost();
             }
             UpdateState(dt);
             UpdateBlink(dt);
@@ -2823,6 +2848,48 @@ namespace DshPetHost
             return true;
         }
 
+        /// <summary>
+        /// Where she should sit across the top of the target window.
+        ///
+        /// The classic perch spot is the window's top-right corner, but that is exactly where
+        /// the caption buttons live (minimize / maximize / close), so parking there covers
+        /// them. Two rules, in order of preference:
+        ///
+        ///  1. Wide window — stay on the right, but shift inwards by the width of the button
+        ///     strip plus a margin so the buttons stay clickable.
+        ///  2. Narrow window — there is no room to be both on the right and clear of the
+        ///     buttons, so sit on the LEFT instead. The left end of a title bar holds only
+        ///     the icon and the title text, which nothing depends on.
+        ///
+        /// Returns the desired window Left (before the work-area clamp).
+        /// </summary>
+        double PerchLeft(Rect wa)
+        {
+            double dpi = _dpiScale > 0 ? _dpiScale : 1.0;
+            // Three buttons is the common case. Windows pads the strip with
+            // SM_CXPADDEDBORDER, but that metric reads 0 inside a system-DPI-aware process
+            // (this one) even though the strip really is padded, so keep a floor instead of
+            // trusting it: under-estimating here is how the artwork would creep back over
+            // the close button.
+            double buttons = GetSystemMetrics(SM_CXSIZE) * 3 / dpi;
+            buttons += Math.Max(GetSystemMetrics(SM_CXPADDEDBORDER) / dpi, 8);
+            const double Margin = 10;
+
+            // Left is a window coordinate; the artwork starts _padX inside it.
+            //   right-hand placement: keep the artwork's right edge left of the button strip
+            //   left-hand placement:  put the artwork's left edge at window.Left + Margin
+            double right = _targetRect.Right - buttons - Margin - _artW - _padX;
+            double left = _targetRect.Left + Margin - _padX;
+
+            // Only stay on the right if the artwork still fits inside the window when it is
+            // offset clear of the buttons; otherwise the title bar's left end is the only
+            // usable ledge.
+            bool rightFits = right >= left;
+            double desired = rightFits ? right : left;
+            // ...and stay on screen even when the window itself is half off it.
+            return Clamp(desired, wa.Left + 4 - _padX, Math.Max(wa.Left + 4 - _padX, wa.Right - _artW - 4 - _padX));
+        }
+
         void UpdatePerch(double dt)
         {
             _perchActive = false;
@@ -2888,13 +2955,12 @@ namespace DshPetHost
                 sitting = false;
             }
 
-            double desiredLeft = _targetRect.Right - Width - 12 + _padX;
+            double desiredLeft = PerchLeft(wa);
             // sitting: the pose's ledge line rests on the window's top edge, legs dangling
             // in front of the window. standing: feet on the edge (legacy behaviour).
             double desiredTop = sitting
                 ? _targetRect.Top - _padTop - PoseLedge("sit") + 6
                 : _targetRect.Top - Height + 6 + _padBottom;
-            desiredLeft = Clamp(desiredLeft, wa.Left + 4 - _padX, Math.Max(wa.Left + 4 - _padX, wa.Right - _artW - 4 - _padX));
             double minTop = wa.Top + 2 - _padTop;
             double maxTop = sitting
                 ? Math.Max(minTop, wa.Bottom - 120)
@@ -3327,7 +3393,15 @@ namespace DshPetHost
         {
             var menu = new ContextMenu { PlacementTarget = this };
             var top = new MenuItem { Header = "始终置顶", IsCheckable = true, IsChecked = Topmost };
-            top.Click += (s, e) => { _topmost = top.IsChecked; Topmost = _topmost; _state.Topmost = _topmost; ScheduleSave(); ApplyClickThrough(); };
+            top.Click += (s, e) =>
+            {
+                _topmost = top.IsChecked;
+                Topmost = _topmost;
+                _state.Topmost = _topmost;
+                ScheduleSave();
+                ApplyClickThrough();
+                if (_topmost) EnsureTopmost();   // re-enter the band right away, not 0.5 s later
+            };
             menu.Items.Add(top);
 
             var through = new MenuItem { Header = "点击穿透（Ctrl+Alt+P）", IsCheckable = true, IsChecked = _clickThrough };
@@ -3421,6 +3495,66 @@ namespace DshPetHost
             SetWindowLong(_source.Handle, GWL_EXSTYLE, ex);
         }
 
+        // ------------------------------------------------------------ topmost watchdog
+
+        /// <summary>
+        /// True when some visible, plausibly-painted window that is NOT itself topmost sits
+        /// above <paramref name="me"/> and overlaps it. Such a window is proof that the pet
+        /// has been pushed out of the topmost band.
+        /// </summary>
+        bool HasNonTopmostCover(IntPtr me)
+        {
+            RECT mine;
+            if (!GetWindowRect(me, out mine)) return false;
+            IntPtr above = GetWindow(me, GW_HWNDPREV);
+            for (int guard = 0; above != IntPtr.Zero && guard < 64; guard++)
+            {
+                if (above != me && IsWindowVisible(above))
+                {
+                    RECT r;
+                    if (GetWindowRect(above, out r))
+                    {
+                        // 1x1 helper windows (thumbnail hosts, IME proxies, DWM stubs) are
+                        // "visible" but never paint over anything: ignore them.
+                        bool real = (r.Right - r.Left) > 4 && (r.Bottom - r.Top) > 4;
+                        bool overlaps = r.Left < mine.Right && r.Right > mine.Left &&
+                                        r.Top < mine.Bottom && r.Bottom > mine.Top;
+                        if (real && overlaps)
+                            return (GetWindowLong(above, GWL_EXSTYLE) & WS_EX_TOPMOST) == 0;
+                    }
+                }
+                above = GetWindow(above, GW_HWNDPREV);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Put her back above ordinary windows after something knocked her out of the
+        /// topmost band.
+        ///
+        /// WS_EX_TOPMOST on its own is not a promise: another process calling
+        /// SetWindowPos(HWND_NOTOPMOST), a shell/DWM transition, or a window manager that
+        /// re-stacks the band can drop the pet below normal windows. WPF only re-asserts
+        /// Topmost when the property value changes, so once she is demoted she stays buried
+        /// under every ordinary window until the host restarts — which looks exactly like
+        /// "the pet's layer got lower".
+        ///
+        /// The band bit is the authoritative signal (Windows clears it on demotion), and the
+        /// overlap scan catches the rarer case where the bit survives but the stacking is
+        /// wrong. Only a NON-topmost cover counts, so she never fights the taskbar or another
+        /// always-on-top app for the band.
+        /// </summary>
+        void EnsureTopmost()
+        {
+            if (_source == null || !_topmost || _userClosed) return;
+            IntPtr me = _source.Handle;
+            if (me == IntPtr.Zero) return;
+
+            bool need = (GetWindowLong(me, GWL_EXSTYLE) & WS_EX_TOPMOST) == 0 || HasNonTopmostCover(me);
+            if (!need) return;
+            SetWindowPos(me, HWND_TOPMOST, 0, 0, 0, 0, SWP_REASSERT);
+        }
+
         // ------------------------------------------------------------ window hook
 
         IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
@@ -3446,12 +3580,40 @@ namespace DshPetHost
                 if (id == 1) { ToggleClickThrough(); handled = true; }
                 else if (id == 2) { _userClosed = true; Close(); handled = true; }
             }
+            if (msg == WM_WINDOWPOSCHANGING && _topmost && !_userClosed)
+            {
+                // Refuse to leave the topmost band in the first place. A window that is
+                // re-stacked by someone else (HWND_NOTOPMOST, a shell transition, a window
+                // manager reshuffling the band) gets one last chance to keep its promise
+                // here, which is cheaper and smoother than waiting for EnsureTopmost to
+                // notice. WPF writes SWP_NOZORDER in its own SetWindowPos calls, so
+                // ordinary moves/resizes are untouched; only an actual z-order change is
+                // intercepted.
+                var wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
+                if ((wp.flags & SWP_NOZORDER_BIT) == 0 && wp.hwndInsertAfter != HWND_TOPMOST)
+                {
+                    wp.hwndInsertAfter = HWND_TOPMOST;
+                    Marshal.StructureToPtr(wp, lParam, false);
+                }
+            }
             return IntPtr.Zero;
         }
 
         const int GWL_EXSTYLE = -20;
         const int WS_EX_TRANSPARENT = 0x20;
+        const int WS_EX_TOPMOST = 0x8;
         const int WS_EX_NOACTIVATE = 0x08000000;
+
+        // WM_WINDOWPOSCHANGING payload: lets us veto a demotion instead of repairing it.
+        [StructLayout(LayoutKind.Sequential)]
+        struct WINDOWPOS
+        {
+            public IntPtr hwnd, hwndInsertAfter;
+            public int x, y, cx, cy;
+            public uint flags;
+        }
+        const int WM_WINDOWPOSCHANGING = 0x0046;
+        const uint SWP_NOZORDER_BIT = 0x0004;
 
         protected override void OnSourceInitialized(EventArgs e)
         {
@@ -3492,6 +3654,10 @@ namespace DshPetHost
         // ------------------------------------------------------------ decode size
 
         [DllImport("user32.dll")] static extern int GetSystemMetrics(int index);
+        // Caption button metrics (physical pixels): the strip she must not cover when
+        // perching on the top-right corner of a window.
+        const int SM_CXSIZE = 30;            // width of a caption button
+        const int SM_CXPADDEDBORDER = 92;    // extra frame padding around it
 
         /// <summary>Monitor scale factor before the window exists (system DPI aware app).</summary>
         static double DetectDpiScale()
